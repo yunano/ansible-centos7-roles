@@ -1,0 +1,7 @@
+chrony_conf:
+  server:
+    - ntp.jst.mfeed.ad.jp
+    - 2.jp.pool.ntp.org
+    - 3.jp.pool.ntp.org
+  request_from:
+    - { type: allow, address: 10.0.2.0/24 }

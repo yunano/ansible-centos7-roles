@@ -1,0 +1,7 @@
+chrony_conf:
+  server:
+    - ntp.nict.jp
+    - 0.jp.pool.ntp.org
+    - 1.jp.pool.ntp.org
+  request_from:
+    - { type: allow, address: 10.0.2.0/24 }

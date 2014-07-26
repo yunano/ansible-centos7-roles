@@ -1,0 +1,15 @@
+- name: open service
+  firewalld: service={{service}} permanent=false state=enabled
+  when: service is defined
+
+- name: open service permanently
+  firewalld: service={{service}} permanent=true state=enabled
+  when: service is defined
+
+- name: open port
+  firewalld: port={{port}} permanent=false state=enabled
+  when: port is defined
+
+- name: open port permanently
+  firewalld: port={{port}} permanent=true state=enabled
+  when: port is defined

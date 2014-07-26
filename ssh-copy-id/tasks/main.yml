@@ -1,0 +1,40 @@
+- name: install epel
+  yum: name={{epel_url}}
+  when: epel_url != None
+
+- name: install packages
+  yum: name={{item}}
+  with_items:
+    - openssh-clients
+    - sshpass
+
+- name: include credentials info
+  include_vars: "{{credentials_file}}"
+  when: credentials_file is defined
+
+- name: add the option element to ssh_key_file
+  set_fact:
+    identity_file_option: "-i {{ssh_key_file}} "
+  when: ssh_key_file is defined
+
+- name: read os credentials
+  set_fact:
+    ssh_host: "{{item}}"
+    ssh_host_credentials: "{{os_credentials[item]|default(os_credentials['<default>'])}}"
+  register: result
+  with_items: hosts[:]
+
+- name: run ssh-copy-id
+  shell: >
+    _copy() {
+      sshpass -p {{item.ansible_facts.ssh_host_credentials.password}} ssh-copy-id {{identity_file_option|default('')}}{{item.ansible_facts.ssh_host_credentials.name}}@{{item.ansible_facts.ssh_host}};
+    };
+    _copy;
+    if [ $? -eq 6 ]; then
+      ssh-keyscan {{item.ansible_facts.ssh_host}} >> ~/.ssh/known_hosts;
+      _copy;
+    fi
+  when: include_self or item.ansible_facts.ssh_host != "{{inventory_hostname}}"
+  register: result_a
+  changed_when: "'ssh-copy-id: WARNING: All keys were skipped' not in result_a.stderr"
+  with_items: result.results

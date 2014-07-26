@@ -1,0 +1,34 @@
+- hosts: localhost
+  gather_facts: no
+  roles:
+    - role: ../ansible-centos7-roles/ssh-key
+      credentials_file: vars/credentials.yml
+  tags: ssh-key
+
+- hosts: localhost
+  gather_facts: no
+  roles:
+    - role: ../ansible-centos7-roles/ssh-copy-id
+      credentials_file: vars/credentials.yml
+      hosts: "{{groups['all']}}"
+      include_self: False
+      ssh_key_file: /root/.ssh/id_rsa
+  tags: ssh-copy-id
+
+- hosts: all
+  gather_facts: no
+  tasks:
+    - group_by: key={{ inventory_file | basename | regex_replace('^hosts-', '') }}
+      changed_when: False
+  tags:
+    - chrony
+
+- hosts: chrony-server
+  roles:
+    - ../ansible-centos7-roles/chrony
+  tags: chrony
+
+- hosts: client
+  roles:
+    - ../ansible-centos7-roles/chrony
+  tags: chrony

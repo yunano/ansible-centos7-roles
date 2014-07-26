@@ -1,0 +1,2 @@
+ssh_key_files:
+  - { path: /root/.ssh/id_rsa, password: }

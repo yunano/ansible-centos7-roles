@@ -1,0 +1,5 @@
+[chrony-server]
+ntp[1:2]
+
+[client]
+client1

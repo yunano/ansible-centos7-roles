@@ -1,0 +1,2 @@
+- name: restart chronyd
+  service: name=chronyd state=restarted enabled=yes
