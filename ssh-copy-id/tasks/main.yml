@@ -22,7 +22,7 @@
     ssh_host: "{{ item }}"
     ssh_host_credentials: "{{ os_credentials[item] | default(os_credentials['<default>']) }}"
   register: result
-  with_items: hosts[:]
+  with_items: hostnames
 
 - name: run ssh-copy-id
   shell: |

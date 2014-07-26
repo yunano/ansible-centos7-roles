@@ -10,7 +10,7 @@
   roles:
     - role: ../ansible-centos7-roles/ssh-copy-id
       credentials_file: vars/credentials.yml
-      hosts: "{{ groups['all'] }}"
+      hostnames: "{{ groups['all'] }}"
       include_self: False
       ssh_key_file: /root/.ssh/id_rsa
   tags: ssh-copy-id
