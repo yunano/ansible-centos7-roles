@@ -9,14 +9,6 @@
   file: path={{ item.path | dirname }} mode=0755 state=directory
   with_items: ssh_key_files
 
-- name: check if the key exists
-  stat: path={{ item.path }}
-  register: result
-  with_items: ssh_key_files
-
 - name: create key pair
-  shell: ssh-keygen -N "{{ item.0.password }}" -f {{ item.0.path }}
-  when: item.1.stat.exists == False
-  with_together:
-    - ssh_key_files
-    - result.results
+  shell: ssh-keygen -N "{{ item.password }}" -f {{ item.path }} creates={{ item.path }}
+  with_items: ssh_key_files
