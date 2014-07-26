@@ -10,5 +10,7 @@
   with_items: ssh_key_files
 
 - name: create key pair
-  shell: ssh-keygen -N "{{ item.password }}" -f {{ item.path }} creates={{ item.path }}
+  shell: ssh-keygen -N "{{ item.password }}" -f {{ item.path }}
+  args:
+    creates: "{{ item.path }}"
   with_items: ssh_key_files

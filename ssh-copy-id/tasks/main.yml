@@ -25,14 +25,14 @@
   with_items: hosts[:]
 
 - name: run ssh-copy-id
-  shell: >
+  shell: |
     _copy() {
-      sshpass -p {{ item.ansible_facts.ssh_host_credentials.password }} ssh-copy-id {{ identity_file_option | default('') }}{{ item.ansible_facts.ssh_host_credentials.name }}@{{ item.ansible_facts.ssh_host }};
-    };
-    _copy;
+      sshpass -p {{ item.ansible_facts.ssh_host_credentials.password }} ssh-copy-id {{ identity_file_option | default('') }}{{ item.ansible_facts.ssh_host_credentials.name }}@{{ item.ansible_facts.ssh_host }}
+    }
+    _copy
     if [ $? -eq 6 ]; then
-      ssh-keyscan {{ item.ansible_facts.ssh_host }} >> ~/.ssh/known_hosts;
-      _copy;
+      ssh-keyscan {{ item.ansible_facts.ssh_host }} >> ~/.ssh/known_hosts
+      _copy
     fi
   when: include_self or item.ansible_facts.ssh_host != "{{ inventory_hostname }}"
   register: result1
