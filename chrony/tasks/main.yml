@@ -9,7 +9,7 @@
 - include: selinux.yml
   vars:
     port_context: ntp_port_t
-    port: "{{chrony_common.server_port}}"
+    port: "{{ chrony_common.server_port }}"
   when: chrony_common.server_port is defined and chrony_common.server_port != None and chrony_common.server_port != 123
 
 - name: modify chrony.conf
@@ -24,5 +24,5 @@
 
 - include: firewalld.yml
   vars:
-    port: "{{chrony_common.server_port}}/udp"
+    port: "{{ chrony_common.server_port }}/udp"
   when: chrony_server is defined and chrony_common.server_port is defined and chrony_common.server_port != None and chrony_common.server_port != 123

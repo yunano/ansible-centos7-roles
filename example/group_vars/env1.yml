@@ -1,5 +1,5 @@
 chrony_conf:
-  server: "{{groups['chrony-server']}}"
+  server: "{{ groups['chrony-server'] }}"
 
 chrony_common:
   server_port: null

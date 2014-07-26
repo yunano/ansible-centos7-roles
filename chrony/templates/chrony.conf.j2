@@ -2,7 +2,7 @@
 # Use public servers from the pool.ntp.org project.
 # Please consider joining the pool (http://www.pool.ntp.org/join.html).
 {% for server in chrony_conf.server -%}
-server {{server}} iburst{% if chrony_server is not defined and has_port_value %} port {{chrony_common.server_port}}{% endif %}
+server {{ server }} iburst{% if chrony_server is not defined and has_port_value %} port {{ chrony_common.server_port }}{% endif %}
 
 {% endfor %}
 
@@ -23,7 +23,7 @@ makestep 10 3
 #allow 192.168/16
 {% if chrony_server is defined -%}
 {% if has_port_value -%}
-port {{chrony_common.server_port}}
+port {{ chrony_common.server_port }}
 {% endif -%}
 {% else -%}
 port 0
@@ -31,7 +31,7 @@ port 0
 
 {% if chrony_conf.request_from is defined -%}
 {% for request in chrony_conf.request_from -%}
-{{request.type}} {{request.address}}
+{{ request.type }} {{ request.address }}
 {% endfor %}
 {% endif %}
 

@@ -10,12 +10,12 @@
   yum: pkg=policycoreutils-python
   when: chrony_selinux_disable is not defined
 
-- name: confirm {{port_context}}
-  shell: semanage port -l | grep ^{{port_context}} | grep -w {{port}}
+- name: confirm {{ port_context }}
+  shell: semanage port -l | grep ^{{ port_context }} | grep -w {{ port }}
   register: result
   ignore_errors: True
   when: chrony_selinux_disable is not defined
 
-- name: add port to {{port_context}}
-  shell: semanage port -a -t {{port_context}} -p udp {{port}}
+- name: add port to {{ port_context }}
+  shell: semanage port -a -t {{ port_context }} -p udp {{ port }}
   when: chrony_selinux_disable is not defined and (result | failed)

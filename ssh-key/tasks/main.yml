@@ -2,7 +2,7 @@
   yum: name=openssh
 
 - name: include credentials info
-  include_vars: "{{credentials_file}}"
+  include_vars: "{{ credentials_file }}"
   when: credentials_file is defined
 
 - name: create key directory
@@ -10,12 +10,12 @@
   with_items: ssh_key_files
 
 - name: check if the key exists
-  stat: path={{item.path}}
+  stat: path={{ item.path }}
   register: result
   with_items: ssh_key_files
 
 - name: create key pair
-  shell: ssh-keygen -N "{{item.0.password}}" -f {{item.0.path}}
+  shell: ssh-keygen -N "{{ item.0.password }}" -f {{ item.0.path }}
   when: item.1.stat.exists == False
   with_together:
     - ssh_key_files
