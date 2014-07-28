@@ -1,12 +1,12 @@
 - name: install chrony
-  yum: pkg=chrony
+  yum: name=chrony
 
 - name: check if server
   include_vars: server-mode.yml
   when: item is defined and (item.type == 'allow' or item.type == 'allow all')
   with_items: chrony_conf.request_from
 
-- include: selinux.yml
+- include: ../../common_tasks/selinux.yml
   vars:
     port_context: ntp_port_t
     port: "{{ chrony_common.server_port }}"
@@ -17,12 +17,12 @@
   notify:
     - restart chronyd
 
-- include: firewalld.yml
+- include: ../../common_tasks/firewalld.yml
   vars:
     service: ntp
   when: chrony_server is defined and chrony_common.server_port is defined and chrony_common.server_port != None and chrony_common.server_port == 123
 
-- include: firewalld.yml
+- include: ../../common_tasks/firewalld.yml
   vars:
     port: "{{ chrony_common.server_port }}/udp"
   when: chrony_server is defined and chrony_common.server_port is defined and chrony_common.server_port != None and chrony_common.server_port != 123
