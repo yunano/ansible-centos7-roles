@@ -1,21 +1,23 @@
 - name: getenforce
   shell: getenforce
+  changed_when: False
   register: result
 
 - name: check if SELinux is disabled
-  include_vars: selinux-disable.yml
+  include_vars: vars/selinux-disable.yml
   when: result.stdout == "Disabled"
 
 - name: install policycoreutils-python
   yum: pkg=policycoreutils-python
-  when: chrony_selinux_disable is not defined
+  when: selinux_disable is not defined
 
 - name: confirm {{ port_context }}
   shell: semanage port -l | grep ^{{ port_context }} | grep -w {{ port }}
   register: result
+  changed_when: False
   ignore_errors: True
-  when: chrony_selinux_disable is not defined
+  when: selinux_disable is not defined
 
 - name: add port to {{ port_context }}
   shell: semanage port -a -t {{ port_context }} -p udp {{ port }}
-  when: chrony_selinux_disable is not defined and (result | failed)
+  when: selinux_disable is not defined and (result | failed)

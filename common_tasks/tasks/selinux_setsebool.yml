@@ -1,0 +1,18 @@
+- name: getenforce
+  shell: getenforce
+  changed_when: False
+  register: result
+
+- name: check if SELinux is disabled
+  include_vars: selinux-disable.yml
+  when: result.stdout == "Disabled"
+
+- name: confirm {{ sebool_parameter }}
+  shell: getsebool {{ sebool_parameter }}
+  register: result
+  changed_when: False
+  when: selinux_disable is not defined
+
+- name: setsebool {{ sebool_parameter }}
+  shell: setsebool -P {{ sebool_parameter }} {{ bool }}
+  when: selinux_disable is not defined and ((result.stdout.endswith(" --> on") and {{ bool }} == 0) or (result.stdout.endswith(" --> off") and {{ bool }} == 1))
