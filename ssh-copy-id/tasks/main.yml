@@ -1,6 +1,5 @@
-- name: install epel
-  yum: name={{ epel_url }}
-  when: epel_url != None
+- name: install epel-release
+  yum: name=epel-release
 
 - name: install packages
   yum: name={{ item }}
@@ -31,7 +30,7 @@
     }
     _copy
     if [ $? -eq 6 ]; then
-      ssh-keyscan {{ item.ansible_facts.ssh_host }} >> ~/.ssh/known_hosts
+      ssh-keyscan {{ item.ansible_facts.ssh_host }} >> ~/.ssh/known_hosts;
       _copy
     fi
   when: include_self or item.ansible_facts.ssh_host != "{{ inventory_hostname }}"
