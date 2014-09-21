@@ -1,0 +1,20 @@
+cobbler:
+  settings:
+    next_server: 192.168.1.2
+    server: 192.168.1.2
+  dhcpd:
+    network_address: 192.168.1.0
+    subnet_address: 255.255.255.0
+    router_ipaddresses:
+      - 192.168.1.1
+    dns_ipaddresses:
+      - 8.8.8.8
+    dynamic_ipaddresses_start: 192.168.1.100
+    dynamic_ipaddresses_end: 192.168.1.199
+
+cobbler_credentials:
+  settings:
+    default_password: cobbler
+    salt: 8KEmb2PN
+  web: 
+    - { name: cobbler, password: cobbler }

@@ -2,12 +2,12 @@ ansible-centos7-roles
 =====================
 
 CentOS 7用のAnsible role集。
-今のところssh-key, ssh-copy-id, chronyを収録している。
+今のところssh-key, ssh-copy-id, chrony, cobblerを収録している。
 
 ## 使い方
 
 ```
-# yum install http://dl.fedoraproject.org/pub/epel/beta/7/x86_64/epel-release-7-0.2.noarch.rpm
+# yum install epel-release
 # yum install ansible
 # git clone https://github.com/yunano/ansible-centos7-roles/
 # cd ansible-centos7-roles/
@@ -21,3 +21,7 @@ CentOS 7用のAnsible role集。
 
 インベントリファイル名をhosts-{何とか}にしておくとgroup_varsの{何とか}.ymlを読むようにしている。
 exampleだとインベントリファイル名がhosts-env1、group_varsにはenv1.yml。
+
+## Licensing
+
+MIT

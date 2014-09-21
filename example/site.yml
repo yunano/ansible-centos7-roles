@@ -22,6 +22,7 @@
       changed_when: False
   tags:
     - chrony
+    - cobbler
 
 - hosts: chrony-server
   roles:
@@ -32,3 +33,9 @@
   roles:
     - ../ansible-centos7-roles/chrony
   tags: chrony
+
+- hosts: cobbler
+  roles:
+    - role: ../ansible-centos7-roles/cobbler
+      credentials_file: vars/credentials.yml
+  tags: cobbler

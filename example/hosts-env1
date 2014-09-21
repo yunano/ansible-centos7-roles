@@ -1,5 +1,8 @@
 [chrony-server]
 ntp[1:2]
 
+[cobbler]
+cobbler1
+
 [client]
 client1

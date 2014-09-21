@@ -1,0 +1,24 @@
+- name: install selinux-policy-devel
+  yum: name=selinux-policy-devel
+
+- name: getenforce
+  shell: getenforce
+  changed_when: False
+  register: result
+
+- name: check if SELinux is disabled
+  include_vars: selinux-disable.yml
+  when: result.stdout == "Disabled"
+
+- name: create te file
+  template: src=selinux_unconfined_domain.j2 dest=/root/{{ module_name }}.te owner=root group=root mode=0644
+  register: result
+  when: selinux_disable is not defined
+
+- name: create pp file
+  shell: make -f /usr/share/selinux/devel/Makefile {{ module_name }}.pp chdir=/root
+  when: result|changed and selinux_disable is not defined
+
+- name: import semodule
+  shell: semodule -i /root/{{ module_name }}.pp
+  when: result|changed and selinux_disable is not defined

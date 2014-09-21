@@ -1,0 +1,12 @@
+- name: get loaders
+  shell: cobbler get-loaders
+
+- name: restart cobblerd
+  service: name=cobblerd state=restarted enabled=yes
+
+- name: cobbler sync
+  shell: cobbler sync
+
+- name: restart xinetd
+  service: name=xinetd state=restarted enabled=yes
+

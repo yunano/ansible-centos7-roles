@@ -1,0 +1,13 @@
+cobbler:
+  settings:
+    next_server: 10.0.3.4
+    server: 10.0.3.4
+  dhcpd:
+    network_address: 10.0.3.0
+    subnet_address: 255.255.255.0
+    router_ipaddresses:
+      - 10.0.3.1
+    dns_ipaddresses:
+      - 8.8.8.8
+    dynamic_ipaddresses_start: 10.0.3.100
+    dynamic_ipaddresses_end: 10.0.3.199

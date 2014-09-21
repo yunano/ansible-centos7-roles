@@ -1,0 +1,122 @@
+- name: include credentials info
+  include_vars: "{{ credentials_file }}"
+  when: credentials_file is defined
+
+- name: install epel-release
+  yum: name=epel-release
+
+- name: install packages
+  yum: name={{ item }}
+  with_items:
+    - cobbler
+    - cobbler-web
+    - dhcp
+
+- include: ../../common_tasks/tasks/selinux_setsebool.yml
+  vars:
+    sebool_parameter: httpd_can_network_connect
+    bool: 1
+
+- include: ../../common_tasks/tasks/selinux_setsebool.yml
+  vars:
+    sebool_parameter: httpd_serve_cobbler_files
+    bool: 1
+
+- include: ../../common_tasks/tasks/selinux_unconfined_domain.yml
+  vars:
+    module_name: cobbler_unconfined
+    setype: cobblerd_t
+
+- include: ../../common_tasks/tasks/firewalld.yml
+  vars:
+    service: http
+
+- include: ../../common_tasks/tasks/firewalld.yml
+  vars:
+    service: https
+
+- include: ../../common_tasks/tasks/firewalld.yml
+  vars:
+    service: tftp
+
+- include: ../../common_tasks/tasks/firewalld.yml
+  vars:
+    service: dhcp
+
+- name: start cobblerd
+  service: name=cobblerd state=started enabled=yes
+
+- name: start httpd
+  service: name=httpd state=started enabled=yes
+
+- name: enable dhcpd
+  service: name=dhcpd enabled=yes
+
+- name: set allow_dynamic_settings in /etc/cobbler/settings
+  lineinfile: "dest=/etc/cobbler/settings regexp='^allow_dynamic_settings: ' line='allow_dynamic_settings: 1'"
+  notify:
+   - get loaders
+   - restart cobblerd
+   - cobbler sync
+   - restart xinetd
+
+- name: set server in /etc/cobbler/settings
+  lineinfile: "dest=/etc/cobbler/settings regexp='^server: ' line='server: {{ cobbler.settings.server }}'"
+  notify:
+   - get loaders
+   - restart cobblerd
+   - cobbler sync
+   - restart xinetd
+
+- name: crypt default password
+  local_action: shell python -c 'import crypt, random, string; print "%s" % crypt.crypt("{{ cobbler_credentials.settings.default_password }}", "$6${{ cobbler_credentials.settings.salt }}")'
+  changed_when: False
+  register: result
+
+- name: set default_password_crypted in /etc/cobbler/settings
+  lineinfile: "dest=/etc/cobbler/settings regexp='^default_password_crypted: ' line='default_password_crypted: {{ result.stdout }}'"
+  notify:
+   - get loaders
+   - restart cobblerd
+   - cobbler sync
+   - restart xinetd
+
+- name: set manage_dhcp in /etc/cobbler/settings
+  lineinfile: "dest=/etc/cobbler/settings regexp='^manage_dhcp: ' line='manage_dhcp: 1'"
+  notify:
+   - get loaders
+   - restart cobblerd
+   - cobbler sync
+   - restart xinetd
+
+- name: set next_server in /etc/cobbler/settings
+  lineinfile: "dest=/etc/cobbler/settings regexp='^next_server: ' line='next_server: {{ cobbler.settings.next_server }}'"
+  notify:
+   - get loaders
+   - restart cobblerd
+   - cobbler sync
+   - restart xinetd
+
+- name: create dhcp template
+  template: src=dhcp.template.j2 dest=/etc/cobbler/dhcp.template owner=root group=root mode=0644
+  notify:
+   - get loaders
+   - restart cobblerd
+   - cobbler sync
+   - restart xinetd
+
+- name: delete cobbler user in /etc/cobbler/users.digest
+  lineinfile: "dest=/etc/cobbler/users.digest state=absent regexp='^cobbler:Cobbler:'"
+
+- name: crypt web password
+  local_action: shell python -c 'import hashlib; user = "{{ item.name }}"; realm = "Cobbler"; print "%s:%s:%s" % (user, realm, (hashlib.md5("%s:%s:{{ item.password }}" % (user, realm)).hexdigest()))'
+  register: result
+  changed_when: False
+  with_items: cobbler_credentials.web
+
+- name: add user in /etc/cobbler/users.digest
+  lineinfile: "dest=/etc/cobbler/users.digest line='{{ item.stdout }}'"
+  with_items: result.results
+
+- name: enable dhcpd
+  service: name=dhcpd enabled=yes
