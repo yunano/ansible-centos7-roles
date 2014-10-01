@@ -15,4 +15,6 @@
 
 - name: setsebool {{ sebool_parameter }}
   shell: setsebool -P {{ sebool_parameter }} {{ bool }}
-  when: selinux_disable is not defined and ((result.stdout.endswith(" --> on") and {{ bool }} == 0) or (result.stdout.endswith(" --> off") and {{ bool }} == 1))
+  when:
+    - selinux_disable is not defined
+    - (result.stdout.endswith(" --> on") and {{ bool }} == 0) or (result.stdout.endswith(" --> off") and {{ bool }} == 1)

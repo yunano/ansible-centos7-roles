@@ -17,8 +17,12 @@
 
 - name: create pp file
   shell: make -f /usr/share/selinux/devel/Makefile {{ module_name }}.pp chdir=/root
-  when: result|changed and selinux_disable is not defined
+  when:
+    - result|changed
+    - selinux_disable is not defined
 
 - name: import semodule
   shell: semodule -i /root/{{ module_name }}.pp
-  when: result|changed and selinux_disable is not defined
+  when:
+    - result|changed
+    - selinux_disable is not defined

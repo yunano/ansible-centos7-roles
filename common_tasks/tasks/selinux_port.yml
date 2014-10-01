@@ -20,4 +20,6 @@
 
 - name: add port to {{ port_context }}
   shell: semanage port -a -t {{ port_context }} -p udp {{ port }}
-  when: selinux_disable is not defined and (result | failed)
+  when:
+    - selinux_disable is not defined 
+    - result | failed
